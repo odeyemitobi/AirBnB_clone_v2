@@ -10,7 +10,7 @@ import models
 from models.base_model import BaseModel
 
 
-class TestBaseModel(unittest.TestCase):
+class testbasemodel(unittest.TestCase):
 
     def setUp(self) -> None:
         """
