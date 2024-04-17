@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """
-#!/Users/mistarkelly/vagrant_project/My-Projects/ALX-ONLY/AirBnB_clone_v2/.venv/bin/python3
 new class for sqlAlchemy
 """
 from os import getenv
@@ -16,7 +15,7 @@ from models.review import Review
 from models.amenity import Amenity
 
 
-class DBStorage:
+class DataBStorage:
     __engine = None
     __session = None
 
