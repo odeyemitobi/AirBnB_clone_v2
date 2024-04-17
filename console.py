@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-#!/Users/mistarkelly/vagrant_project/My-Projects/ALX-ONLY/AirBnB_clone_v2/.venv/bin/python3
-    console for managing my objects
+#! /usr/bin/env python3 console for managing my objects
 """
 import sys
 import cmd
