@@ -15,7 +15,7 @@ from models.review import Review
 from models.amenity import Amenity
 
 
-class DataBStorage:
+class DBStorage:
     __engine = None
     __session = None
 
