@@ -1,6 +1,11 @@
 #!/usr/bin/python3
 """
-#! /usr/bin/env python3 console for managing my objects
+Update the def do_create that takes
+in these two arguments self, arg
+
+function of your command interpreter
+console.py to allow for object
+creation with given parameters
 """
 import sys
 import cmd
@@ -127,16 +132,16 @@ class HBNBCommand(cmd.Cmd):
         """
         Create an object with given parameters.
         """
-        usr_input = arg.split(' ')
+        argment = arg.split(' ')
 
-        if not usr_input[0]:
+        if not argment[0]:
             print("** class name missing **")
             return
 
-        class_name = usr_input[0]
+        class_name = argment[0]
         if class_name in self.ALL_CLASSES:
             obj_dict = {}
-            for parameter in usr_input[1:]:
+            for parameter in argment[1:]:
                 key, value = parameter.split('=')
                 key = key.strip()
                 value = value.strip('"')
