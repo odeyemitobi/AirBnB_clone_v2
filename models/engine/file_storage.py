@@ -45,16 +45,16 @@ class FileStorage:
     # HBNB_MYSQL_HOST=localhost HBNB_MYSQL_DB=hbnb_dev_db HBNB_TYPE_STORAGE=db ./console.py
     def all(self, cls=None) -> dict:
         """
-            this method is responsible for returning the whole
-            object in the file __objects dictionary.
+            this all method is meant to return a whole
+            object file __objects - dictionary.
         """
-        all_objects = {}
+        all_obj = {}
         if cls:
             for k, v in self.__objects.items():
                 cls_name, cls_id = k.split('.')
                 if cls.__name__ == cls_name:
-                    all_objects[k] = v
-            return all_objects
+                    all_obj[k] = v
+            return all_obj
         for v in self.__objects.values():
             if hasattr(v, '_sa_instance_state'):
                 delattr(v, '_sa_instance_state')
