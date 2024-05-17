@@ -124,4 +124,3 @@ class FileStorage:
         Deserialize the JSON file to objects
         """
         self.reload()
-
