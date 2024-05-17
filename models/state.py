@@ -23,8 +23,8 @@ class State(BaseModel, Base):
     @property
     def cities(self):
         """
-        Getter method for cities
-        Returns a list of City objects linked to the current State
+            Getter method for cities
+            Returns a list of City objects linked to the current State
         """
         from models import storage
         cities = []
