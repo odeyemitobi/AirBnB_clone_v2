@@ -69,3 +69,9 @@ class DBStorage:
         except Exception as e:
             # Handle any errors that occur during metadata creation or session initialization
             print(f"Error occurred during reload: {e}")
+    
+    def close(self):
+        """
+        Remove the current session and create a new one
+        """
+        self.__session.remove()
