@@ -1,70 +1,126 @@
 #!/usr/bin/python3
 """
-Contains the FileStorage class
+    responsible for persisting object state in file_db.
 """
-
 import json
-from models.amenity import Amenity
+from os import path
 from models.base_model import BaseModel
+from models.user import User
+from models.state import State
 from models.city import City
 from models.place import Place
+from models.amenity import Amenity
 from models.review import Review
-from models.state import State
-from models.user import User
-
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
+import shlex
 
 
 class FileStorage:
-    """serializes instances to a JSON file & deserializes back to instances"""
-
-    # string - path to the JSON file
-    __file_path = "file.json"
-    # dictionary - empty but will store all objects by <class name>.id
+    """
+        FileStorage.
+    """
+    ALL_CLASSES = {
+        'BaseModel': BaseModel,
+        'User': User,
+        'State': State,
+        'City': City,
+        'Place': Place,
+        'Amenity': Amenity,
+        'Review': Review
+    }
+    __file_path = 'file.json'
     __objects = {}
 
-    def all(self, cls=None):
-        """returns the dictionary __objects"""
-        if cls is not None:
-            new_dict = {}
-            for key, value in self.__objects.items():
-                if cls == value.__class__ or cls == value.__class__.__name__:
-                    new_dict[key] = value
-            return new_dict
+    def new(self, obj) -> None:
+
+        """
+            this adding New Object to file storage.
+        """
+        # construct key
+        key = "{}.{}".format(
+            obj.__class__.__name__, obj.id
+        )
+        self.__objects[key] = obj
+
+    # echo 'all State' | HBNB_MYSQL_USER=hbnb_dev HBNB_MYSQL_PWD=hbnb_dev_pwd
+    # HBNB_MYSQL_HOST=localhost HBNB_MYSQL_DB=hbnb_dev_db HBNB_TYPE_STORAGE=db ./console.py
+    def all(self, cls=None) -> dict:
+        """
+            this all method is meant to return a whole
+            object file __objects - dictionary.
+        """
+        all_obj = {}
+        if cls:
+            for k, v in self.__objects.items():
+                cls_name, cls_id = k.split('.')
+                if cls.__name__ == cls_name:
+                    all_obj[k] = v
+            return all_obj
+        for v in self.__objects.values():
+            if hasattr(v, '_sa_instance_state'):
+                delattr(v, '_sa_instance_state')
         return self.__objects
 
-    def new(self, obj):
-        """sets in __objects the obj with key <obj class name>.id"""
-        if obj is not None:
-            key = obj.__class__.__name__ + "." + obj.id
-            self.__objects[key] = obj
+    def save(self) -> None:
+        """
+            for converting the python objects into python dictionary,
+            so they can be stored into the file storage,this process is called
+            serialization.
+        """
+        # declare dictionary.
+        serialized_obj = {}
 
-    def save(self):
-        """serializes __objects to the JSON file (path: __file_path)"""
-        json_objects = {}
-        for key in self.__objects:
-            json_objects[key] = self.__objects[key].to_dict()
-        with open(self.__file_path, 'w') as f:
-            json.dump(json_objects, f)
+        for k, v in self.__objects.items():
+            # call the to_dict method in the basemodel
+            # to represent every object to dict.
+            serialized_obj[k] = v.to_dict()
+        # dump into file storage
+        with open(self.__file_path, "w") as obj_dic:
+            json.dump(serialized_obj, obj_dic)
 
-    def reload(self):
-        """deserializes the JSON file to __objects"""
-        try:
-            with open(self.__file_path, 'r') as f:
-                jo = json.load(f)
-            for key in jo:
-                self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
-            pass
+    def reload(self) -> None:
+        """
+            responsible for reloading the object in file storage and
+            dynamically create objects out of the data in the file storage
+        """
+
+        # open file
+        # split the key of the dictionary
+        # dynamically create classes base on the class name.
+        if path.exists(self.__file_path) and\
+                path.getsize(self.__file_path) > 0:
+            with open(self.__file_path, "r") as db:
+                try:
+                    file_content = json.load(db)
+
+                    for k, v in file_content.items():
+
+                        # split the dictionary key
+                        cls_name, cls_key = k.split('.')
+
+                        # dynamically create the class object
+                        # again according to the entry in db.
+
+                        # same as doing.
+                        global_class = self.ALL_CLASSES[cls_name]
+
+                        result = global_class(**v)
+                        # print(result)
+
+                        self.__objects[k] = result
+                except json.decoder.JSONDecodeError:
+                    print('Unable to serialize')
+                    exit(0)
 
     def delete(self, obj=None):
-        """delete obj from __objects if it’s inside"""
-        if obj is not None:
-            key = obj.__class__.__name__ + '.' + obj.id
-            if key in self.__objects:
-                del self.__objects[key]
-
+        """
+            responsible deleting of objects
+        """
+        if obj:
+            key = "{}.{}".format(obj.__class__.__name__, obj.id)
+            del self.__objects[key]
+    
     def close(self):
-        """call reload() method for deserializing the JSON file to objects"""
+        """
+            Deserialize the JSON file to objects
+        """
         self.reload()
